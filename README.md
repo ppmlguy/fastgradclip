@@ -1,6 +1,7 @@
 # Fast Per-Example Gradient Clipping
 This repository contains the source code for the paper "Scaling Up Differentially Private Deep Learning with Fast Per-Example Gradient Clipping".
 
+----------------------------------------------------------
 
 ## Installing dependecies
 - The code was written and tested using Python 3.7 and Pytorch 1.5.0.
@@ -15,6 +16,16 @@ The main function is implemented in `run_algo.py`. To train a neural network usi
 python run_algo.py --train_alg reweight
 ```
 If one or multiple GPUs are available on the machine, the program tries to choose a cuda device using `nvidia-smi` command. On Windows OS, it expects the executable is located in `C:\Program Files\NVIDIA Corporation\NVSMI` directory. On a Linux machine, it assumes the command is available in the current directory. Either add the location of `nvidia-smi` binary to the system's `PATH` environment variable or manually set the ID of cuda device using `--gpu_id` flag.
+
+### Example usage
+- Running non-private algorithm to train a CNN model on MNIST dataset
+```shell
+python run_algo.py --train_alg batch --model_name CNN --dname mnist
+```
+- Running the proposed ReweightGP algorithm to train an RNN on mnist dataset, using mini-batches of size 128
+```shell
+python run_algo.py --train_alg reweight --model_name RNN --dname mnist --batch_size 128
+```
 
 ## Important Input Arguments
 The script takes several input arguments. To see available command line input arguments and allowed values, simply run 
