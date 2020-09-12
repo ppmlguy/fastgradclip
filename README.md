@@ -1,2 +1,2 @@
 # Fast Per-Example Gradient Clipping
-Fast Per-Example Gradient Clipping for Differential Privacy
+This repository contains the source code for the paper "Scaling Up Differentially Private Deep Learning with Fast Per-Example Gradient Clipping".
