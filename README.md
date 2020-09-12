@@ -33,7 +33,7 @@ The script takes several input arguments. To see available command line input ar
 python run_algo.py --help
 ```
 Here we introduce each optional argument:
-- `--data_dir [path to the foloder]`: path to the directory in which input datasets are stored.
+- `--data_dir`: string, path to the root directory in which input datasets are stored.
 - `--dname`: the name of input dataset, Allowed values are {mnist, cifar10, fmnist, lsum}.
 - `--train_alg`: the name of algorith to use for training, It can be `batch`, `reweight`, or `naive`.
 - `--model_name`: the name of neural network architecture to use, Available values include:
