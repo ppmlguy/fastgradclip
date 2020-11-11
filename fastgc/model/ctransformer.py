@@ -1,9 +1,9 @@
 import torch
 import torch.nn as nn
-from pegrad.layers.linear import Linear
-from pegrad.layers.transformer import PositionalEncoding
-from pegrad.layers.transformer import TransformerEncoder
-from pegrad.layers.transformer import TransformerEncoderLayer
+from fastgc.layers.linear import Linear
+from fastgc.layers.transformer import PositionalEncoding
+from fastgc.layers.transformer import TransformerEncoder
+from fastgc.layers.transformer import TransformerEncoderLayer
 
 
 class TransformerModel(nn.Module):

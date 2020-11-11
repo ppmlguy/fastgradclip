@@ -22,11 +22,20 @@ from fastgc.util import get_filename
 from fastgc.expr import create_model
 
 
-def get_mem_usage(device):
-    gpu_id = int(str(device).split(':')[1].strip())
-    gpu_mem = check_gpu_memory()
+def _gpu_available(device):
+    device_name = str(device)
+    
+    return torch.cuda.is_available() and device_name.startswith('cuda')
 
-    return gpu_mem[gpu_id]
+
+def get_mem_usage(device):
+    if _gpu_available(device):
+        gpu_id = int(str(device).split(':')[1].strip())
+        gpu_mem = check_gpu_memory()
+
+        return gpu_mem[gpu_id]
+    else:
+        return 0    
     
 
 def train_and_eval(device, train_loader, test_loader, input_size, output_size,
@@ -46,6 +55,7 @@ def train_and_eval(device, train_loader, test_loader, input_size, output_size,
         tr_loss = np.zeros(args.niter)
         niter = 0
 
+    # containers to store performance metrics
     tr_acc = np.zeros_like(tr_loss)
     te_loss = np.zeros_like(tr_loss)
     te_acc = np.zeros_like(tr_loss)
@@ -75,11 +85,11 @@ def train_and_eval(device, train_loader, test_loader, input_size, output_size,
             mean_loss_val = mean_loss.item()
             optim.zero_grad()
 
-            if not epoch_mode:
+            if not epoch_mode and _gpu_available(device):
                 gpu_mem[niter] = torch.cuda.memory_allocated(device) / float(2**20)                
                 process = psutil.Process(os.getpid())
                 mem = process.memory_info().rss / float(2**20)
-
+            
             if model.train_alg == 'reweight':
                 with torch.no_grad():
                     grad_norm = model.pe_grad_norm(mean_loss, batch_size, device)
@@ -101,12 +111,13 @@ def train_and_eval(device, train_loader, test_loader, input_size, output_size,
 
             if epoch_mode:
                 etime[epoch] += elapsed
-            else:
-                etime[niter] = elapsed
-                gpu_mem_max[niter] = torch.cuda.max_memory_allocated(device) / (2**20) # MB
-                smi_mem[niter] = get_mem_usage(device)
-                tr_loss[niter] = mean_loss_val               
-                vir_mem[niter] = mem
+            else:                
+                etime[niter] = elapsed                
+                tr_loss[niter] = mean_loss_val
+                if _gpu_available(device):
+                    gpu_mem_max[niter] = torch.cuda.max_memory_allocated(device) / (2**20) # MB
+                    smi_mem[niter] = get_mem_usage(device)
+                    vir_mem[niter] = mem
                 
                 if args.verbose:
                     print("{0:5s} {1:9.5f} {2:8.2f} {3:8.2f} {4:8.2f} {5:8.5f}".format(
@@ -124,9 +135,11 @@ def train_and_eval(device, train_loader, test_loader, input_size, output_size,
         if epoch_mode:
             tr_loss[epoch], tr_acc[epoch] = test(model, device, criterion, train_loader)
             te_loss[epoch], te_acc[epoch] = test(model, device, criterion, test_loader)
-            gpu_mem[epoch] = torch.cuda.memory_allocated(device) / (2**20) # MB
-            gpu_mem_max[epoch] = torch.cuda.max_memory_allocated(device) / (2**20) # MB
-            smi_mem[epoch] = get_mem_usage(device)
+
+            if _gpu_available(device):
+                gpu_mem[epoch] = torch.cuda.memory_allocated(device) / (2**20) # MB
+                gpu_mem_max[epoch] = torch.cuda.max_memory_allocated(device) / (2**20) # MB
+                smi_mem[epoch] = get_mem_usage(device)
 
             if args.verbose:
                 print("{0:5s} {1:9.5f} {2:6.2f} {3:6.3f}".format(
@@ -172,15 +185,20 @@ if __name__ == "__main__":
     parser = argument_parser()
     args = parser.parse_args()
 
+    # check if the data_dir argument is set and if it exists
     if args.data_dir is None:
         print('The path to the directory containing dataset must be set.')
         exit(-1)
+    elif not os.path.exists(args.data_dir):
+        print("Please set data_dir argument correctly. The specified dataset directory doesn't exist.")
+        exit(-1)
 
+    # a model specific setting
     if args.model_name[:3] == 'vgg' or args.model_name[:3] == 'res':
         args.dname = 'lsun'
 
     if args.niter > 0:
-        args.rep = 1
+        args.rep = 1  # number of repetitions for the experiments
 
     if args.verbose:
         print("Parameters")

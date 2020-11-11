@@ -10,6 +10,7 @@ class Linear(nn.Linear):
     def __init__(self, in_features, out_features, bias=True):
         super(Linear, self).__init__(in_features, out_features, bias)
 
+        # two elements needed for per-example gradient computation
         self.pre_activation = None
         self.layer_input = None
 
@@ -20,10 +21,20 @@ class Linear(nn.Linear):
         self.pre_activation = out            
         
         return self.pre_activation
-
+    
     def per_example_gradient(self, deriv_pre_activ):
+        """
+        This function computes the per-example gradients w.r.t. 
+        weights and bias of the layer.
+
+        Parameters:
+        -------------------
+        deriv_pre_activ: a tensor containing the derivative of loss function 
+                         with respect to the pre-activation of layer
+        """
         is_2d = self.layer_input.dim() == 2
         H = self.layer_input
+        
         if is_2d:
             batch_size = deriv_pre_activ.size(0)
             dLdZ = deriv_pre_activ * batch_size
@@ -50,6 +61,8 @@ class Linear(nn.Linear):
         H = self.layer_input
 
         if is_2d:
+            # When the input is a vector, we can compute the per-example gradient,
+            # the norm of per-example graidents can be directly computed without materializing them.
             batch_size = deriv_pre_activ.size(0)
             dLdZ = deriv_pre_activ * batch_size
 

@@ -9,12 +9,9 @@ def tokenize(s):
 
 
 def load_imdb(args):    
-    # TEXT = data.Field(tokenize='spacy')
     TEXT = data.Field(lower=True, tokenize=tokenize, batch_first=True,
                       fix_length=args.max_seq_len)
     LABEL = data.LabelField(dtype=torch.long)
-    # TEXT = data.Field(lower=True, include_lengths=True, batch_first=True)
-    # LABEL = data.Field(sequential=False)
 
     train_data, test_data = datasets.IMDB.splits(TEXT, LABEL, root=args.data_dir)
 

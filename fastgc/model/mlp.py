@@ -9,6 +9,15 @@ from fastgc.activation import activation
 class MLP(PeGradNet):
     def __init__(self, input_size, hidden_sizes, output_size, act_func='sigmoid',
                  train_alg='batch'):
+        """
+        Parameters:
+        ------------------
+        - input_size: integer, the number of features in the input
+        - hidden_sizes: a list of integers, a list object containing number of units for hidden layers
+        - output_size: an integer, the length of output vector 
+        - act_func: string, name of activation function to use for each hidden layer 
+        - train_alg: string, allowed values are {'batch', 'reweight', 'naive'}
+        """
         super(MLP, self).__init__()
 
         self.input_size = input_size

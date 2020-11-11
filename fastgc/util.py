@@ -11,10 +11,14 @@ from fastgc.activation import act_func_list
 
 
 def check_gpu_memory():
+    """
+    Computes the size of available GPU memory.
+    """
     curr_dir = os.getcwd()
     is_win32 = (sys.platform == "win32")
 
     if is_win32:
+        # On Windows, it assumes 'nvidia-smi.exe' is available at this location
         nvsmi_dir = r"C:\Program Files\NVIDIA Corporation\NVSMI"
         os.chdir(nvsmi_dir)
         
@@ -31,8 +35,13 @@ def check_gpu_memory():
     return gpu_memory
 
 def cuda_setup(is_deterministic, gpu_idx=-1):
+    """
+    Create a device instance for pytorch. It uses a GPU if it is available.
+    When multiple GPUs are available, it chooses the one with the largest available 
+    gpu memory.
+    """
     use_cuda = torch.cuda.is_available()
-    kwargs = {'num_workers': 8, 'pin_memory': True} if use_cuda else {}
+    kwargs = {'num_workers': 4, 'pin_memory': True} if use_cuda else {}
     
     if use_cuda:
         if gpu_idx < 0:
@@ -60,6 +69,9 @@ def copy_weight_values(models):
 
 
 def clip_tensor(data, clip_thresh):
+    """
+    Clips all elements in the input tensor along the first dimension
+    """
     batch_size = data.shape[0]
     
     x = data.view(batch_size, -1)
@@ -112,7 +124,8 @@ def argument_parser():
     parser.add_argument("--num_heads", type=int, default=8, help="number of attention heads")
     parser.add_argument("--max_seq_len", help="Max sequence length.", default=512, type=int)
     parser.add_argument("--niter", type=int, default=-1)
-    parser.add_argument("--download", action='store_true')
+    # parser.add_argument("--download", action='store_true')
+    parser.add_argument("--download", type=bool, default=True)
     parser.add_argument("--gpu_id", help="gpu_id to use", default=-1, type=int)
 
     return parser
@@ -125,6 +138,9 @@ def float_to_string(value):
 
 
 def conv_outsize(in_size, kernel_size, padding, stride):
+    """
+    Computes the size of output image after the convolution defined by the input arguments
+    """
     out_size = (in_size - kernel_size + (2 * padding)) // stride
     out_size += 1
 
@@ -132,6 +148,9 @@ def conv_outsize(in_size, kernel_size, padding, stride):
 
 
 def compute_epsilon(clip_thresh, delta, sigma, batch_size, epochs):
+    """
+    Computes the privacy parameters for differential privacy
+    """
     if clip_thresh <= 0 or sigma <= 0:
         return 0.0, 0.0, 0.0
 

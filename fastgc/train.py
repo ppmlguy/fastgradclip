@@ -24,11 +24,13 @@ def clip_grad_norm(model, device, data, target, criterion, max_norm):
 
     batch_size = len(data)
 
+    # process each example in the minibatch one-by-one
     for i in range(batch_size):
         output_i = model(data[i].unsqueeze(0))
         target_i = target[i].unsqueeze(0)
 
         loss = criterion(output_i, target_i)
+        # computes the gradient for the i-th example
         loss.backward()
 
         # bounding the total norm
@@ -70,6 +72,15 @@ def grad_per_loss(loss, model, device, batch_size, clip_thresh):
 
 
 def test(models, device, criterion, data_iter):
+    """
+    Evaluates the model; it computes the loss and accuracy.
+
+    Parameters:
+    -------------------------------
+    - model: a model object
+    - device: an instance of torch.device object
+    - criterion: an instance of PyTorch's loss class
+    """
     if not isinstance(models, list):
         models = [models]
 

@@ -1,6 +1,15 @@
 # Fast Per-Example Gradient Clipping
 This repository contains the source code for the paper "Scaling Up Differentially Private Deep Learning with Fast Per-Example Gradient Clipping".
 
+The provided `fastgc` package provides a fast and scalable PyTorch implementation of *gradient clipping* method used for satisfying differential privacy. It provides a set of wrapper classes for neural network layers. To compute per-example gradients for differential privacy, you can simply import the `fastgc` package and replace the original PyTorch layers in your network with the provided wrapper classes.
+The support types of layers include: 
+- Linear layer
+- Convolutional layer 
+- Reccurent layer
+- LayerNorm layer
+- Transformer encoding layer
+
+
 ----------------------------------------------------------
 
 ## Installing dependecies
@@ -9,6 +18,8 @@ This repository contains the source code for the paper "Scaling Up Differentiall
 ```shell
 pip install -r requirements.txt
 ```
+- The code expects that `fastgc` package is available in your system. This means that `fastgc` directory is in your python's search path. An easy way to meet this requirement is to place `fastgc` directory as a subdirectory of one of directories in your `PYTHONPATH` environment variable.
+
 
 ## Running the code
 The main function is implemented in `run_algo.py`. To train a neural network using the proposed ReweightGP algorithm, you can execute
@@ -20,11 +31,11 @@ If one or multiple GPUs are available on the machine, the program tries to choos
 ### Example usage
 - Running non-private algorithm to train a CNN model on MNIST dataset
 ```shell
-python run_algo.py --train_alg batch --model_name CNN --dname mnist
+python run_algo.py --train_alg batch --model_name CNN --dname mnist --download
 ```
 - Running the proposed ReweightGP algorithm to train an RNN on mnist dataset, using mini-batches of size 128
 ```shell
-python run_algo.py --train_alg reweight --model_name RNN --dname mnist --batch_size 128
+python run_algo.py --train_alg reweight --model_name RNN --dname mnist --batch_size 128 --download
 ```
 
 ## Important Input Arguments
@@ -67,7 +78,7 @@ Here we introduce each optional argument:
 - `--num_heads`: integer, number of attention head to put in a transformer block
 - `--max_seq_len`: integer, maximum length of sequence for IMDB dataset
 - `--niter`: integer, number of iterations to run the algorithm. If this parameter is given, the program ignores `epochs` parameter.
-- `--download`: If this flag is set, the program will try to download the dataset from internet if it is not found in the location specified by `data_dir`
+- `--download`: boolean (True or False) If true, the program will try to download the dataset from the internet if it is not found in the location specified by `data_dir`
 - `--gpu_id`: integer, the id of cuda device to use
 
 ## Result Files
