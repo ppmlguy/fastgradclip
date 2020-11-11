@@ -24,18 +24,19 @@ pip install -r requirements.txt
 ## Running the code
 The main function is implemented in `run_algo.py`. To train a neural network using the proposed ReweightGP algorithm, you can execute
 ```shell
-python run_algo.py --train_alg reweight
+python run_algo.py --train_alg reweight --data_dir <path to the directory containing the dataset> --download True
 ```
+You will need to make sure the `--data_dir` is correctly set to the location containing the datasets to use. If the dataset to use is not available on the machine, please set `---download True` so that the program can download it from the internet.
 If one or multiple GPUs are available on the machine, the program tries to choose a cuda device using `nvidia-smi` command. On Windows OS, it expects the executable is located in `C:\Program Files\NVIDIA Corporation\NVSMI` directory. On a Linux machine, it assumes the command is available in the current directory. Either add the location of `nvidia-smi` binary to the system's `PATH` environment variable or manually set the ID of cuda device using `--gpu_id` flag.
 
 ### Example usage
 - Running non-private algorithm to train a CNN model on MNIST dataset
 ```shell
-python run_algo.py --train_alg batch --model_name CNN --dname mnist --download
+python run_algo.py --train_alg batch --model_name CNN --dname mnist --download True
 ```
 - Running the proposed ReweightGP algorithm to train an RNN on mnist dataset, using mini-batches of size 128
 ```shell
-python run_algo.py --train_alg reweight --model_name RNN --dname mnist --batch_size 128 --download
+python run_algo.py --train_alg reweight --model_name RNN --dname mnist --batch_size 128 --download True
 ```
 
 ## Important Input Arguments
