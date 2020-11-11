@@ -1,5 +1,5 @@
 # Fast Per-Example Gradient Clipping
-This repository contains the source code for the paper "Scaling Up Differentially Private Deep Learning with Fast Per-Example Gradient Clipping".
+This repository contains the source code for the paper "Scaling Up Differentially Private Deep Learning with Fast Per-Example Gradient Clipping" (to appear in POPETS 2021).
 
 The provided `fastgc` package provides a fast and scalable PyTorch implementation of *gradient clipping* method used for satisfying differential privacy. It provides a set of wrapper classes for neural network layers. To compute per-example gradients for differential privacy, you can simply import the `fastgc` package and replace the original PyTorch layers in your network with the provided wrapper classes.
 The support types of layers include: 
