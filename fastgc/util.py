@@ -45,8 +45,9 @@ def cuda_setup(is_deterministic, gpu_idx=-1):
     
     if use_cuda:
         if gpu_idx < 0:
-            memory_usage = check_gpu_memory()
-            gpu_idx = np.argmin(memory_usage)
+            # memory_usage = check_gpu_memory()
+            # gpu_idx = np.argmin(memory_usage)
+            gpu_idx = 0
 
         # torch.cuda.set_device(gpu_idx)
         device = torch.device("cuda:{}".format(gpu_idx))
