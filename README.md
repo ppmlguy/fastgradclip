@@ -32,11 +32,11 @@ python run_algo.py --train_alg reweight --data_dir <path to the directory contai
 ### Example usage
 - Running non-private algorithm to train a CNN model on MNIST dataset
 ```shell
-python run_algo.py --train_alg batch --model_name CNN --dname mnist --download True
+python run_algo.py --train_alg batch --model_name CNN --data_dir <path to data> --dname mnist --download True
 ```
 - Running the proposed ReweightGP algorithm to train an RNN on mnist dataset, using mini-batches of size 128
 ```shell
-python run_algo.py --train_alg reweight --model_name RNN --dname mnist --batch_size 128 --download True
+python run_algo.py --train_alg reweight --model_name RNN --data_dir <path to data> --dname mnist --batch_size 128 --download True
 ```
 
 ## Important Input Arguments
