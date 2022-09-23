@@ -97,8 +97,8 @@ def train_and_eval(device, train_loader, test_loader, input_size, output_size,
                                               clip_thresh / grad_norm.detach()) / batch_size
                 loss.backward(sample_weight)
             elif model.train_alg == 'naive':
-                grad = clip_grad_norm(model, device, data, target, criterion, clip_thresh)
-    
+                grad = clip_grad_norm(model, device, loss, clip_thresh)
+
                 for j, param in enumerate(filter(lambda x: x.requires_grad, model.parameters())):
                     param.grad = grad[j] / batch_size
             elif model.train_alg == 'batch':
