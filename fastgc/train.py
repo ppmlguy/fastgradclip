@@ -17,21 +17,16 @@ def verify_gradients(loss, model, pe_grads):
               torch.norm(pe_grads[i].mean(dim=0) - full_grad[i]))
 
 
-def clip_grad_norm(model, device, data, target, criterion, max_norm):
+def clip_grad_norm(model, device, loss, max_norm):
     model_params = [param for param in model.parameters() if param.requires_grad]
     grad = [torch.zeros(param.size(), device=device, requires_grad=False)
             for param in model_params]
 
-    batch_size = len(data)
+    batch_size = len(loss)
 
-    # process each example in the minibatch one-by-one
+    # computes the gradients of the minibatch one-by-one
     for i in range(batch_size):
-        output_i = model(data[i].unsqueeze(0))
-        target_i = target[i].unsqueeze(0)
-
-        loss = criterion(output_i, target_i)
-        # computes the gradient for the i-th example
-        loss.backward()
+        loss[i].backward(retain_graph=True)
 
         # bounding the total norm
         torch.nn.utils.clip_grad_norm_(model_params, max_norm)
